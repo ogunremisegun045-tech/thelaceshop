@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How was your visit?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Raleway:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* The Lace Shop brand tokens, same as the main site */
+  :root{
+    --bg:#fbf8f2;
+    --ink:#1a1713;
+    --ink-soft:#6f675c;
+    --line:#e7e0d3;
+    --amber:#a97b2c;
+    --amber-deep:#a97b2c;
+    --card:#fffdf9;
+    --danger-bg:#fbf8f2;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse 80% 60% at 65% 30%,rgba(169,123,44,.10) 0%,transparent 65%),
+      radial-gradient(ellipse 50% 40% at 20% 80%,rgba(169,123,44,.06) 0%,transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Raleway', system-ui, -apple-system, sans-serif;
+    font-weight:300;
+    -webkit-font-smoothing:antialiased;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .card{
+    width:100%;
+    max-width:480px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:0;
+    padding:48px 36px;
+    text-align:center;
+  }
+  .kicker{
+    font-family:'Playfair Display', serif;
+    font-size:1.05rem;
+    letter-spacing:.12em;
+    color:var(--amber);
+    margin:0 0 14px;
+  }
+  h1{
+    font-family:'Playfair Display', serif;
+    font-weight:400;
+    font-size:30px;
+    line-height:1.2;
+    margin:0 0 32px;
+    max-width:360px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .stars{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .star-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:4px;
+    line-height:0;
+    transition:transform .15s ease;
+  }
+  .star-btn:hover{ transform:translateY(-2px); }
+  .star-btn:focus-visible{ outline:2px solid var(--amber); outline-offset:3px; border-radius:6px; }
+  .star-btn svg{ width:40px; height:40px; display:block; }
+  .star-btn path{
+    fill:none;
+    stroke:var(--ink-soft);
+    stroke-width:1.5;
+    transition:fill .15s ease, stroke .15s ease;
+  }
+  .star-btn.lit path{
+    fill:var(--amber);
+    stroke:var(--amber);
+  }
+  .hint{
+    font-size:.7rem;
+    letter-spacing:.12em;
+    color:var(--ink-soft);
+    min-height:18px;
+    margin-bottom:6px;
+  }
+
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  textarea{
+    width:100%;
+    min-height:120px;
+    margin-top:20px;
+    padding:14px;
+    border:1px solid var(--line);
+    border-radius:0;
+    background:var(--danger-bg);
+    color:var(--ink);
+    font-family:inherit;
+    font-weight:400;
+    font-size:15px;
+    resize:vertical;
+  }
+  textarea::placeholder{ color:var(--ink-soft); }
+  textarea:focus{ outline:none; border-color:var(--amber); }
+
+  .btn{
+    margin-top:20px;
+    width:100%;
+    padding:15px 20px;
+    border:none;
+    border-radius:0;
+    background:var(--amber);
+    color:#fff;
+    font-family:inherit;
+    font-size:.62rem;
+    letter-spacing:.3em;
+    text-transform:uppercase;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .3s ease, transform .3s ease;
+  }
+  .btn:hover:not(:disabled){ background:#8f6620; transform:translateY(-2px); }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+  .thanks{
+    font-size:.78rem;
+    color:var(--ink-soft);
+    line-height:2;
+    margin-top:8px;
+  }
+  .thanks strong{ color:var(--ink); font-weight:500; }
+  .thanks a{ color:var(--amber); text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div id="view-rate" class="view active">
+    <p class="kicker">The Lace Shop</p>
+    <h1>How was your experience with us?</h1>
+    <div class="stars" id="stars" role="radiogroup" aria-label="Rate your experience out of 5 stars"></div>
+    <p class="hint" id="hint">Tap a star to rate</p>
+  </div>
+
+  <div id="view-private" class="view">
+    <p class="kicker">Thanks for the honesty</p>
+    <h1>What went wrong?</h1>
+    <p class="thanks">This goes straight to the owner. A couple of sentences helps a lot.</p>
+    <textarea id="feedback-text" placeholder="Tell us what happened..."></textarea>
+    <button class="btn" id="send-private" disabled>Send feedback</button>
+  </div>
+
+  <div id="view-sent" class="view">
+    <p class="kicker">Feedback sent</p>
+    <h1>Thank you — we'll follow up.</h1>
+    <p class="thanks">Your feedback has been opened in your email app. Hit <strong>send</strong> there to deliver it to the owner.</p>
+  </div>
+
+  <div id="view-public" class="view">
+    <p class="kicker">Glad to hear it</p>
+    <h1>Taking you to Google to leave your review...</h1>
+    <p class="thanks">If nothing happens, <a id="fallback-link" href="#">tap here</a>.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ====== CONFIG ====== */
+  // Private feedback (1 to 3 stars) is sent to this email address.
+  var OWNER_EMAIL = "REPLACE_WITH_OWNER_EMAIL";
+  // Built from the Google Maps listing for The Lace Shop. If you have the official
+  // short link (Business Profile > Get more reviews, looks like https://g.page/r/XXXX/review), use that instead.
+  var GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=ChIJd1Ad842TOxAR5eI6JZy1-bc";
+  var BUSINESS_NAME = "The Lace Shop";
+  /* ====== END CONFIG ====== */
+
+  var starsWrap = document.getElementById('stars');
+  var hint = document.getElementById('hint');
+  var selected = 0;
+
+  var labels = ["Poor","Below average","Okay","Good","Excellent"];
+
+  for(var i=1;i<=5;i++){
+    (function(i){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'star-btn';
+      btn.setAttribute('role','radio');
+      btn.setAttribute('aria-checked','false');
+      btn.setAttribute('aria-label', i + ' star' + (i>1?'s':''));
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.02 6.6.77-4.85 4.57 1.27 6.56L12 17.3l-5.92 3.12 1.27-6.56L2.5 9.29l6.6-.77L12 2.5z"/></svg>';
+      btn.addEventListener('mouseenter', function(){ paint(i); hint.textContent = labels[i-1]; });
+      btn.addEventListener('mouseleave', function(){ paint(selected); hint.textContent = selected ? labels[selected-1] : 'Tap a star to rate'; });
+      btn.addEventListener('click', function(){
+        selected = i;
+        paint(i);
+        starsWrap.querySelectorAll('.star-btn').forEach(function(b,idx){
+          b.setAttribute('aria-checked', (idx+1===i) ? 'true':'false');
+        });
+        hint.textContent = labels[i-1];
+        setTimeout(function(){ route(i); }, 260);
+      });
+      starsWrap.appendChild(btn);
+    })(i);
+  }
+
+  function paint(upTo){
+    starsWrap.querySelectorAll('.star-btn').forEach(function(b, idx){
+      b.classList.toggle('lit', idx < upTo);
+    });
+  }
+
+  function show(id){
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+  }
+
+  function route(rating){
+    if(rating >= 4){
+      show('view-public');
+      document.getElementById('fallback-link').href = GOOGLE_REVIEW_URL;
+      setTimeout(function(){ window.location.href = GOOGLE_REVIEW_URL; }, 700);
+    } else {
+      show('view-private');
+    }
+  }
+
+  var textarea = document.getElementById('feedback-text');
+  var sendBtn = document.getElementById('send-private');
+  textarea.addEventListener('input', function(){
+    sendBtn.disabled = textarea.value.trim().length === 0;
+  });
+
+  sendBtn.addEventListener('click', function(){
+    var subject = encodeURIComponent(BUSINESS_NAME + ' — ' + selected + '-star feedback');
+    var body = encodeURIComponent(
+      'Rating: ' + selected + ' / 5\n\n' +
+      'Feedback:\n' + textarea.value.trim()
+    );
+    window.location.href = 'mailto:' + OWNER_EMAIL + '?subject=' + subject + '&body=' + body;
+    setTimeout(function(){ show('view-sent'); }, 400);
+  });
+})();
+</script>
+
+</body>
+</html>
